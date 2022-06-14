@@ -36,7 +36,7 @@
 
  
 
-static char labs[] = " ./lab81 ./mutexq ./pimutexf"; 
+static char labs[] = " ./lab81 ./mutexq ./pimutexf "; 
 
 static int prognum = 4; 
 
