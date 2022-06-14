@@ -100,7 +100,7 @@ for (int i = 0; i < num_crt; i++){
 }
 
 for (int i = 0; i < num_cons; i++){
-        pthread_cancel(*(cons + i));
+pthread_cancel(*(cons + i));
 }
 return 0;
 }
