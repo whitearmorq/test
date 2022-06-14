@@ -5,13 +5,13 @@
 #include <time.h>
 #include <unistd.h>
 
-pthread_t *prod, *cons;
-int *buff, num_prod, num_cons, size_buff, pos = -1;
+pthread_t *crt, *cons;
+int *buff, num_crt, num_cons, size_buff, pos = -1;
 sem_t lock, emptyitems, fullitems;
 
-int produce(int numb){
+int create(int digit){
         int item = 1 + rand() % 100;
-        printf("Producer %d creates item %d\n", numb, item);
+        printf("creator %d creates item %d\n", digit, item);
         return item;
 }
 
@@ -21,12 +21,12 @@ void append(int item){
         printf("%d appended to the buffer\n", item);
 }
 
-void *producer(void *arg){
-        int numb = 0;
-        while(!pthread_equal(*(prod + numb), pthread_self()) && numb < num_prod)
-        {numb++;}
+void *creator(void *arg){
+        int digit = 0;
+        while(!pthread_equal(*(crt + digit), pthread_self()) && digit < num_crt)
+        {digit++;}
         while (1){
-                int item = produce(numb + 1);
+                int item = create(digit + 1);
                 sem_wait(&emptyitems);
                 sem_wait(&lock);
                 append(item);
@@ -37,8 +37,8 @@ void *producer(void *arg){
         pthread_exit(0);
 }
 
-void consume(int item, int numb){
-        printf("item %d was eaten by %d consumer\n", item, numb);
+void consume(int item, int digit){
+        printf("item %d was used by %d consumer\n", item, digit);
 }
 
 int receive(){
@@ -51,9 +51,9 @@ int receive(){
 }
 
 void *consumer(void *arg){
-        int numb = 0;
-        while(!pthread_equal(*(cons + numb), pthread_self()) && num_cons)
-        {numb++;}
+        int digit = 0;
+        while(!pthread_equal(*(cons + digit), pthread_self()) && num_cons)
+        {digit++;}
         while (1){
                 int item;
                 sem_wait(&fullitems);
@@ -61,7 +61,7 @@ void *consumer(void *arg){
                 item = receive();
                 sem_post(&lock);
                 sem_post(&emptyitems);
-                consume(item, numb + 1);
+                consume(item, digit + 1);
                 sleep(1 + rand() % 4);
         }
         pthread_exit(0);
@@ -70,14 +70,14 @@ int main(){
 
 srand(time(NULL));
 
-printf("Input number of producers: ");
-scanf("%d", &num_prod);
-printf("Input number of consumers: ");
+printf("Input digiter of creators: ");
+scanf("%d", &num_crt);
+printf("Input digiter of consumers: ");
 scanf("%d", &num_cons);
 printf("Input size of the buffer: ");
 scanf("%d", &size_buff);
 
-prod = (pthread_t *) malloc(num_prod * sizeof(pthread_t));
+crt = (pthread_t *) malloc(num_crt * sizeof(pthread_t));
 cons = (pthread_t *) malloc(num_cons * sizeof(pthread_t));
 buff = (int *) malloc(size_buff * sizeof(int));
 
@@ -85,8 +85,8 @@ sem_init(&lock, 0, 1);
 sem_init(&fullitems, 0, 0);
 sem_init(&emptyitems, 0, size_buff);
 
-for (int i = 0; i < num_prod; i++){
-        pthread_create(prod + i, NULL, producer, NULL);
+for (int i = 0; i < num_crt; i++){
+        pthread_create(crt + i, NULL, creator, NULL);
 }
 
 for (int i = 0; i < num_cons; i++){
@@ -95,8 +95,8 @@ for (int i = 0; i < num_cons; i++){
 
 sleep(3);
 
-for (int i = 0; i < num_prod; i++){
-        pthread_cancel(*(prod + i));
+for (int i = 0; i < num_crt; i++){
+        pthread_cancel(*(crt + i));
 }
 
 for (int i = 0; i < num_cons; i++){
