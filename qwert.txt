@@ -11,7 +11,7 @@ using namespace std;
 
 int globalVariable = 2;
 
-main()
+int main()
 {
    string sIdentifier;
    int    iStackVariable = 20;
