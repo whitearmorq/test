@@ -54,7 +54,7 @@ struct msg_text
 
  
 
-struct msgbuf 
+struct msg_buf 
 
 { 
 
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
 
     long procnum, n; 
 
-    struct msgbuf msg; 
+    struct msg_buf msg; 
 
     int msqid, semid, shmid; 
 
